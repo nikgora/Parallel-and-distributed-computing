@@ -1,0 +1,19 @@
+version: '3'
+services:
+  java-server:
+    build: ./java-server
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+
+  python-client:
+    build: ./python-client
+    depends_on:
+      - java-server
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
