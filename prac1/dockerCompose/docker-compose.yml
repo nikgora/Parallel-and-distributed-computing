@@ -8,6 +8,7 @@ services:
 
   python-client:
     build: ./dockerComposepython
+    restart: on-failure
     depends_on:
       - java-server
     networks:
