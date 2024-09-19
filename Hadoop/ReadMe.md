@@ -68,6 +68,6 @@ root@1ac7ab746329:/# cd /tmp\
 root@1ac7ab746329:/tmp# hdfs dfs -put name.txt /user/root/input\
 2024-09-19 09:39:54,676 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false\
 ostTrusted = false\
-root@1ac7ab746329:~# hdfs dfs -cat /user/root/input/name.txt\
+root@1ac7ab746329:~ # hdfs dfs -cat /user/root/input/name.txt\
 2024-09-19 09:44:51,889 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false\
 Mykola Goraroot@1ac7ab746329:~#\
