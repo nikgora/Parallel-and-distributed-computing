@@ -1,4 +1,5 @@
-
+For HADOOP\
+git clone https://github.com/big-data-europe/docker-hadoop \
 E:\Parallel-and-distributed-computing\Hadoop\docker-hadoop>docker-compose up -d\
 time="2024-09-19T11:19:52+02:00" level=warning msg="E:\\Parallel-and-distributed-computing\\Hadoop\\docker-hadoop\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"\
 [+] Running 28/28\
