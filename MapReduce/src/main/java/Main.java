@@ -20,7 +20,6 @@ public class Main {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String line = value.toString();
-            System.out.println("Processing line: " + line);
             if (line.startsWith("A")) {
                 word.set("Attribute");
                 context.write(word, one);
