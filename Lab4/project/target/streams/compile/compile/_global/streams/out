@@ -1,0 +1,4 @@
+[error] E:\Parallel-and-distributed-computing\Lab4\project\Dependencies.scala:10:6: ';' expected but string literal found.
+[error]   }  "org.apache.spark" %% "spark-core" % "3.5.3"
+[error]      ^
+[error] one error found
