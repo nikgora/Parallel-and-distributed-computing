@@ -41,27 +41,22 @@ object TriangleCountingExample {
   def main(args: Array[String]): Unit = {
     // Creates a SparkSession.
     val spark = SparkSession
-      .builder
+      .builder()
       .appName(s"${this.getClass.getSimpleName}")
+      .master("local[*]")
       .getOrCreate()
     val sc = spark.sparkContext
-
     // $example on$
     // Load the edges in canonical order and partition the graph for triangle count
-    val graph = GraphLoader.edgeListFile(sc, "data/graphx/followers.txt", true)
+    val graph = GraphLoader.edgeListFile(sc, "C:/Users/mykol/Downloads/graph for LR4.txt", canonicalOrientation = false)
       .partitionBy(PartitionStrategy.RandomVertexCut)
     // Find the triangle count for each vertex
     val triCounts = graph.triangleCount().vertices
-    // Join the triangle counts with the usernames
-    val users = sc.textFile("data/graphx/users.txt").map { line =>
-      val fields = line.split(",")
-      (fields(0).toLong, fields(1))
-    }
-    val triCountByUsername = users.join(triCounts).map { case (id, (username, tc)) =>
-      (username, tc)
-    }
-    // Print the result
-    println(triCountByUsername.collect().mkString("\n"))
+    // Sum the triangle counts and divide by 3 to get the total number of unique triangles
+    val totalTriangles = triCounts.map(_._2).reduce(_ + _) / 3
+
+    println(s"Total number of triangles: $totalTriangles")
+
     // $example off$
     spark.stop()
   }

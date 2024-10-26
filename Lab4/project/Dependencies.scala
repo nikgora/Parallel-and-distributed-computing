@@ -28,5 +28,5 @@ object Dependencies {
     "org.apache.spark" %% "spark-core",
     "org.apache.spark" %% "spark-sql",
     "org.apache.spark" %% "spark-graphx",
-  ).map(_ % Version.spark % "provided" cross CrossVersion.constant("2.13"))
+  ).map(_ % Version.spark)// % "provided" cross CrossVersion.constant("2.13"))
 }

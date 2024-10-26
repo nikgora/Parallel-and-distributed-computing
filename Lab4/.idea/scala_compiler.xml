@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ScalaCompilerConfiguration">
     <profile name="sbt 1" modules="Lab4" />
-    <profile name="sbt 2" modules="scala-course-spring">
+    <profile name="sbt 2" modules="Lab-4,scala-course-spring">
       <option name="deprecationWarnings" value="true" />
       <option name="featureWarnings" value="true" />
       <parameters>
