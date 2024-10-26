@@ -48,7 +48,7 @@ object TriangleCountingExample {
     val sc = spark.sparkContext
     // $example on$
     // Load the edges in canonical order and partition the graph for triangle count
-    val graph = GraphLoader.edgeListFile(sc, "C:/Users/mykol/Downloads/graph for LR4.txt", canonicalOrientation = false)
+    val graph = GraphLoader.edgeListFile(sc, "C:/Users/mykol/Downloads/graph for LR4.txt")
       .partitionBy(PartitionStrategy.RandomVertexCut)
     // Find the triangle count for each vertex
     val triCounts = graph.triangleCount().vertices
