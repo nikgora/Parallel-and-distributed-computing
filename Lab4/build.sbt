@@ -28,4 +28,5 @@ lazy val dependencies =
   cats ++
     `cats-effect` ++
     munit ++
-    spark
+    spark ++
+    hadoop

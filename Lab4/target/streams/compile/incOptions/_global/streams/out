@@ -1,11 +1,11 @@
 [debug] Created transactional ClassFileManager with tempDir = E:\Parallel-and-distributed-computing\Lab4\target\scala-2.13\classes.bak
 [debug] About to delete class files:
-[debug] 	TriangleCountingExample$.class
-[debug] 	TriangleCountingExample.class
 [debug] We backup class files:
-[debug] 	TriangleCountingExample$.class
-[debug] 	TriangleCountingExample.class
+[debug] Created transactional ClassFileManager with tempDir = E:\Parallel-and-distributed-computing\Lab4\target\scala-2.13\classes.bak
+[debug] About to delete class files:
+[debug] We backup class files:
 [debug] Registering generated classes:
-[debug] 	TriangleCountingExample$.class
-[debug] 	TriangleCountingExample.class
+[debug] 	main$.class
+[debug] 	main$$typecreator10$1.class
+[debug] 	main.class
 [debug] Removing the temporary directory used for backing up class files: E:\Parallel-and-distributed-computing\Lab4\target\scala-2.13\classes.bak

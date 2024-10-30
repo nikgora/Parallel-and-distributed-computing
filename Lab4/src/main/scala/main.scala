@@ -1,42 +1,28 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
+/*
+--add-exports java.base/sun.nio.ch=ALL-UNNAMED
+*/
 // scalastyle:off println
 
 // $example on$
 import org.apache.spark.graphx.{GraphLoader, PartitionStrategy}
 // $example off$
 import org.apache.spark.sql.SparkSession
-
-/**
- * A vertex is part of a triangle when it has two adjacent vertices with an edge between them.
- * GraphX implements a triangle counting algorithm in the [`TriangleCount` object][TriangleCount]
- * that determines the number of triangles passing through each vertex,
- * providing a measure of clustering.
- * We compute the triangle count of the social network dataset.
- *
- * Note that `TriangleCount` requires the edges to be in canonical orientation (`srcId < dstId`)
- * and the graph to be partitioned using [`Graph.partitionBy`][Graph.partitionBy].
- *
- * Run with
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.expressions.Window
+/** LAB 4
  * {{{
- * bin/run-example graphx.TriangleCountingExample
- * }}}
+ *
+ *    val graph = GraphLoader.edgeListFile(sc, "C:/Users/mykol/Downloads/graph for LR4.txt", canonicalOrientation = false)
+ *    .partitionBy(PartitionStrategy.RandomVertexCut)
+ *    // Find the triangle count for each vertex
+ *    val triCounts = graph.triangleCount().vertices
+ *    // Sum the triangle counts and divide by 3 to get the total number of unique triangles
+ *    val totalTriangles = triCounts.map(_._2).reduce(_ + _) / 3
+ *    println(s"Total number of triangles: $totalTriangles")
+ *   }}}
  */
+
 object main {
   def main(args: Array[String]): Unit = {
     // Creates a SparkSession.
@@ -44,19 +30,62 @@ object main {
       .builder()
       .appName(s"${this.getClass.getSimpleName}")
       .master("local[*]")
+      .config("spark.driver.extraJavaOptions", "--add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED")
       .getOrCreate()
     val sc = spark.sparkContext
-    // $example on$
-    // Load the edges in canonical order and partition the graph for triangle count
-    val graph = GraphLoader.edgeListFile(sc, "C:/Users/mykol/Downloads/graph for LR4.txt", canonicalOrientation = false)
-      .partitionBy(PartitionStrategy.RandomVertexCut)
-    // Find the triangle count for each vertex
-    val triCounts = graph.triangleCount().vertices
-    // Sum the triangle counts and divide by 3 to get the total number of unique triangles
-    val totalTriangles = triCounts.map(_._2).reduce(_ + _) / 3
 
-    println(s"Total number of triangles: $totalTriangles")
+//    val graph = GraphLoader.edgeListFile(sc, "C:/Users/mykol/Downloads/graph for LR4.txt", canonicalOrientation = false)
+//        .partitionBy(PartitionStrategy.RandomVertexCut)
+//        // Find the triangle count for each vertex
+//       val triCounts = graph.triangleCount().vertices
+//        // Sum the triangle counts and divide by 3 to get the total number of unique triangles
+//       val totalTriangles = triCounts.map(_._2).reduce(_ + _) / 3
+//        println(s"Total number of triangles: $totalTriangles")
+    import spark.implicits._
+    // Шлях до каталогу з текстовими файлами
+    val dataPath = "C:/Users/mykol/Downloads/news20/20_newsgroup/talk.religion.misc"
+    // Функція для обробки тексту: видаляє небажані символи, переводить у нижній регістр
+    def cleanText(text: String): String = {
+      text.toLowerCase
+        .replaceAll("(?i)path:.*", "")
+        .replaceAll("(?i)newsgroups:.*", "")
+        .replaceAll("(?i)writes:.*", "")
 
+        .replaceAll("'","\'")
+        .replaceAll("[^a-z']", " ")
+    }
+    // Зчитування всіх файлів з каталогу
+    val files = sc.wholeTextFiles(dataPath + "/*")
+      .map { case (filePath, content) =>
+        val filename = filePath.split("/").last.split("\\.").head
+        val cleanedContent = cleanText(content)
+        (filename, cleanedContent)
+      }.toDF("docId", "content")
+
+    // Розбиття контенту на слова і фільтрація
+    val words = files
+      .select($"docId", explode(split($"content", "\\s+")).as("word"))
+      .filter($"word".rlike("^[a-z']+$"))
+
+    // Обчислення інвертованого індексу
+    val invertedIndex = words
+      .groupBy("word")
+      .agg(
+        count("*").as("total_count"),
+        collect_set("docId").as("documents")
+      )
+      .select(
+        $"word",
+        $"total_count",
+        concat_ws(" ", $"documents").as("doc_list")
+      )
+//    invertedIndex.show(10)
+    invertedIndex.coalesce(1)
+        .write
+        .mode("overwrite")
+        .option("header", "true")
+        .csv("E:/Parallel-and-distributed-computing/Lab4/MyOut")
+       // $example on$
     // $example off$
     spark.stop()
   }
