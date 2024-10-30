@@ -50,7 +50,6 @@ object main {
         .replaceAll("(?i)path:.*", "")
         .replaceAll("(?i)newsgroups:.*", "")
         .replaceAll("(?i)writes:.*", "")
-
         .replaceAll("'","\'")
         .replaceAll("[^a-z']", " ")
     }
