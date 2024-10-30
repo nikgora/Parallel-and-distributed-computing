@@ -34,29 +34,8 @@ object main {
       .getOrCreate()
     val sc = spark.sparkContext
 
-//    val graph = GraphLoader.edgeListFile(sc, "C:/Users/mykol/Downloads/graph for LR4.txt", canonicalOrientation = false)
-//        .partitionBy(PartitionStrategy.RandomVertexCut)
-//        // Find the triangle count for each vertex
-//       val triCounts = graph.triangleCount().vertices
-//        // Sum the triangle counts and divide by 3 to get the total number of unique triangles
-//       val totalTriangles = triCounts.map(_._2).reduce(_ + _) / 3
-//        println(s"Total number of triangles: $totalTriangles")
     import spark.implicits._
 
-    val directory = new File("E:\\Parallel-and-distributed-computing\\Lab4\\MyOut")
-    if (directory.exists() && directory.isDirectory) {
-      val files = directory.listFiles()
-
-      if (files != null) {
-        files.foreach { file =>
-          if (file.isFile) {
-            file.delete()
-          }
-        }
-      }
-    }
-
-    // Шлях до каталогу з текстовими файлами
     val dataPath = "C:/Users/mykol/Downloads/news20/20_newsgroup"
     // Функція для обробки тексту: видаляє небажані символи, переводить у нижній регістр
     def cleanText(text: String): String = {
