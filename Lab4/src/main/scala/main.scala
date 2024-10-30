@@ -9,7 +9,7 @@ import org.apache.spark.graphx.{GraphLoader, PartitionStrategy}
 // $example off$
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.expressions.Window
+import java.io.File
 /** LAB 4
  * {{{
  *
@@ -42,15 +42,39 @@ object main {
 //       val totalTriangles = triCounts.map(_._2).reduce(_ + _) / 3
 //        println(s"Total number of triangles: $totalTriangles")
     import spark.implicits._
+
+    val directory = new File("E:\\Parallel-and-distributed-computing\\Lab4\\MyOut")
+    if (directory.exists() && directory.isDirectory) {
+      val files = directory.listFiles()
+
+      if (files != null) {
+        files.foreach { file =>
+          if (file.isFile) {
+            file.delete()
+          }
+        }
+      }
+    }
+
     // Шлях до каталогу з текстовими файлами
-    val dataPath = "C:/Users/mykol/Downloads/news20/20_newsgroup/talk.religion.misc"
+    val dataPath = "C:/Users/mykol/Downloads/news20/20_newsgroup"
     // Функція для обробки тексту: видаляє небажані символи, переводить у нижній регістр
     def cleanText(text: String): String = {
       text.toLowerCase
         .replaceAll("(?i)path:.*", "")
         .replaceAll("(?i)newsgroups:.*", "")
         .replaceAll("(?i)writes:.*", "")
+        .replaceAll("(?i)from:.*", "")
+        .replaceAll("(?i)lines:.*", "")
+        .replaceAll("(?i)date:.*", "")
+        .replaceAll("(?i)References:.*", "")
+        .replaceAll("(?i)Organization:.*", "")
+        .replaceAll("(?i)Nntp-Posting-Host:.*", "")
+        .replaceAll("(?i)Sender.*", "")
+        .replaceAll("(?i)Message-ID.*", "")
+        .replaceAll("(?i)Xref.*", "")
         .replaceAll("'","\'")
+        .replaceAll("(?is)begin.*?end", "")
         .replaceAll("[^a-z']", " ")
     }
     // Зчитування всіх файлів з каталогу
@@ -64,7 +88,7 @@ object main {
     // Розбиття контенту на слова і фільтрація
     val words = files
       .select($"docId", explode(split($"content", "\\s+")).as("word"))
-      .filter($"word".rlike("^[a-z']+$"))
+      .filter($"word".rlike("^[a-z']+$") && !$"word".startsWith("\'"))
 
     // Обчислення інвертованого індексу
     val invertedIndex = words
@@ -78,7 +102,7 @@ object main {
         $"total_count",
         concat_ws(" ", $"documents").as("doc_list")
       )
-//    invertedIndex.show(10)
+
     invertedIndex.coalesce(1)
         .write
         .mode("overwrite")
