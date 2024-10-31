@@ -53,7 +53,7 @@ object main {
         .replaceAll("(?i)Message-ID.*", "")
         .replaceAll("(?i)Xref.*", "")
         .replaceAll("'","\'")
-        .replaceAll("(?is)begin.*?end", "")
+        .replaceAll("(?is)begin\\s+\\d+\\s+\\S+.*?end", "")
         .replaceAll("[^a-z']", " ")
     }
     // Зчитування всіх файлів з каталогу
